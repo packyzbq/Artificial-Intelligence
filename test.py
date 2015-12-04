@@ -1,4 +1,6 @@
+import classify as classify
 import jieba
+import csv
 
 file_train_name = r'C:\Users\宝琦\\Documents\EXP_Data\Artificial Intelligence project\training_80w.txt'
 file_test_name = r'C:\\Users\\宝琦\\Documents\\EXP_Data\\Artificial Intelligence project\\test_20w.txt'
@@ -29,16 +31,16 @@ def delete_item(sentence):
 # parameter --generator
 def delete_stop_word(sentence):
     result = []
-    copy = []
+    #copy = []
     if len(stop_list) == 0:
         get_stop_list()
-        print(stop_list)
+        #print(stop_list)
     for row in sentence:
-        copy.append(row)
+       # copy.append(row)
         if row in stop_list or is_num(row):
             continue
         result.append(row)
-    return  result,copy
+    return  result
 
 def get_stop_list():
     with open(file_stop_dict) as stop_file:
@@ -52,15 +54,18 @@ def get_stop_list():
 
 
 jieba.initialize()
+output = open('out.csv','w+',newline='')
+writer = csv.writer(output)
 with open(file_train_name,encoding='utf-8') as train_file:
-    for i in range(5):
+    for i in range(5):#TODO change scale
         row = train_file.readline()
         seq = row.split("	",maxsplit=2)
         result = delete_item(seq[2])
         cut = jieba.cut(result)
-        #print('|'.join(cut))
-        #print(type(cut))
-        cons,copy = delete_stop_word(cut)
-        print('|'.join(copy))
-        print('|'.join(cons))
+        cons = delete_stop_word(cut)
+        cons.insert(0,int(seq[1]))
+        writer.writerow(cons)
+output.close()
+print('output to out.csv.....done')
+
 
